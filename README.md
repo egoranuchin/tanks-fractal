@@ -6,7 +6,7 @@ A one-pixel-per-click browser game about building a recursive tank.
 
 Open `index.html` in a browser, or upload this ZIP to itch.io as an HTML5 game. It does not need a build step, a server, dependencies, or an account to play.
 
-Each click or tap adds one pixel. Six pixels make a tank; six tanks make a larger tank. Completing a level zooms the camera out. You can click the field, tap **PLACE PIXEL**, or press Space.
+Each click or tap adds one pixel. Six pixels make a tank; six tanks make a larger tank. Completing a level zooms the camera out. The **Reset progress** button clears saved pixels after confirmation, for testing. You can click the field, tap **PLACE PIXEL**, or press Space.
 
 ## Save data
 
