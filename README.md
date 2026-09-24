@@ -12,6 +12,17 @@ Each click or tap adds one pixel. Six pixels make a tank; six tanks make a large
 
 The pixel count saves after each click in the browser's `localStorage`, under `tanks.prototype.v1.pixels`. It restores when the game is reopened at the same origin in the same browser profile. It does not sync between devices or different sites, and clearing site data removes it. The in-game status indicates if browser storage is unavailable.
 
+## To do (ideas for later)
+
+The current prototype deliberately stays at one pixel per click, one recursive six-part silhouette, and the goal of building the largest tank. These are ideas to evaluate after playtesting, not promised features:
+
+- [ ] Try distinct tank silhouettes at higher levels while keeping the six-to-one recursive construction.
+- [ ] Explore progression that eventually lets one action build a complete lower-level tank instead of one pixel.
+- [ ] Explore automation and upgrades for building faster.
+- [ ] Consider a prestige loop after the basic progression has a satisfying pace.
+- [ ] Add more feedback to pixel placement and tank completion: animation, sound, and camera movement.
+- [ ] Explore objectives beyond reaching the highest tank level; decide later whether combat belongs in the game.
+
 ## GitHub Pages
 
 Put `index.html` at the repository root and enable GitHub Pages from the main branch root. The README is optional for hosting.
