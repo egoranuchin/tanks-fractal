@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101914">
+  <meta name="description" content="Build an endlessly recursive pixel tank, one click at a time.">
+  <title>TANKS · Prototype 0.1</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' fill='%23101914'/%3E%3Cpath fill='%23a9d879' d='M18 6h12v12H18zM6 18h36v12H6zM6 30h12v12H6zM30 30h12v12H30z'/%3E%3C/svg%3E">
+  <style>
+    :root{color-scheme:dark;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#101914;color:#e7efdf;font-size:16px}
+    *{box-sizing:border-box}body{margin:0;min-height:100svh;background:radial-gradient(ellipse at 50% 37%,#1f3027 0%,#101914 70%)}
+    button{font:inherit}.app{min-height:100svh;max-width:1120px;margin:auto;padding:clamp(18px,3vw,36px);display:flex;flex-direction:column;gap:20px}
+    header{display:flex;justify-content:space-between;align-items:baseline;gap:16px;border-bottom:1px solid #33483b;padding-bottom:16px}
+    h1{font-size:clamp(23px,3vw,32px);line-height:1;margin:0;letter-spacing:.17em;font-weight:800;color:#c0e390}
+    .version,.eyebrow{font-size:.8rem;letter-spacing:.11em;text-transform:uppercase;color:#8fa593}.version{white-space:nowrap}
+    main{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 265px;gap:24px;min-height:0}
+    .playfield{position:relative;min-height:440px;overflow:hidden;border:1px solid #3e5945;background:radial-gradient(circle at center,#23372b 0%,#17251d 55%,#122018 100%);box-shadow:inset 0 0 90px #07110bc0,0 20px 70px #070f0a80;cursor:crosshair;touch-action:manipulation}
+    .playfield:focus-visible,.build:focus-visible{outline:3px solid #e2ef8e;outline-offset:3px}
+    .playfield::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.18;background-image:linear-gradient(#73936b22 1px,transparent 1px),linear-gradient(90deg,#73936b22 1px,transparent 1px);background-size:24px 24px}
+    canvas{display:block;width:100%;height:100%}.view-label{position:absolute;top:18px;left:20px;pointer-events:none;color:#a3b8a6;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase}
+    .field-hint{position:absolute;bottom:18px;left:20px;right:20px;pointer-events:none;color:#a6bd9d;font-size:.9rem;text-align:center}
+    .flash{position:absolute;inset:0;pointer-events:none;background:#b7e284;opacity:0}.flash.on{animation:flash .55s ease-out}@keyframes flash{from{opacity:.22}to{opacity:0}}
+    aside{display:flex;flex-direction:column;gap:22px;border:1px solid #344b3a;background:#17241bc9;padding:22px;min-width:0}
+    .metric{border-bottom:1px solid #354a3a;padding-bottom:18px}.metric:last-of-type{border:0}.metric strong{display:block;font-size:clamp(28px,3.1vw,40px);line-height:1.2;letter-spacing:-.06em;margin-top:9px;font-variant-numeric:tabular-nums}.metric strong small{font-size:.42em;letter-spacing:0;color:#9fb3a0;font-weight:400}
+    .progress-title{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.progress-title span{white-space:nowrap;color:#c3d8b6;font-size:.9rem;font-variant-numeric:tabular-nums}
+    .cells{display:flex;gap:5px;margin-top:14px}.cells i{display:block;height:14px;flex:1;background:#344b38;border:1px solid #55705a}.cells i.complete{background:#b9de80;border-color:#d2ef9b}.cells i.active{background:linear-gradient(90deg,#a8cd75 var(--fill),#344b38 var(--fill));border-color:#9dc478}
+    .detail{color:#9fb49e;font-size:.85rem;line-height:1.5;margin:12px 0 0}.build{margin-top:auto;width:100%;min-height:66px;border:1px solid #d2ec9c;background:#b5d986;color:#132017;font-size:1.05rem;font-weight:800;letter-spacing:.06em;cursor:pointer;box-shadow:5px 5px 0 #54734c;transition:transform .1s,box-shadow .1s,background .15s}.build:hover{background:#d0eda1}.build:active{transform:translate(4px,4px);box-shadow:1px 1px 0 #54734c}
+    .instructions{margin:0;color:#a6b9a3;font-size:.85rem;line-height:1.6}.instructions kbd{border:1px solid #5a705a;padding:2px 5px;color:#c9dbc1}
+    .save-status{grid-column:1/-1;color:#9fbe98;font-size:.78rem;line-height:1.4;margin:0}
+    footer{display:flex;justify-content:space-between;gap:12px;color:#829a87;font-size:.78rem;letter-spacing:.04em}
+    @media(max-width:730px){.app{gap:14px;padding:16px 16px max(16px,env(safe-area-inset-bottom))}main{display:flex;flex-direction:column;gap:14px}.playfield{min-height:0;height:min(54svh,510px);flex:none}aside{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;padding:16px}.metric{padding-bottom:9px}.metric strong{font-size:28px}.progress{grid-column:1/-1}.build{grid-column:1/-1;min-height:60px}.instructions{grid-column:1/-1}.field-hint{font-size:.8rem}footer{font-size:.7rem}}
+    @media(max-width:400px){h1{font-size:22px}.version{font-size:.68rem}.playfield{height:47svh}.metric strong{font-size:25px}}
+    @media(prefers-reduced-motion:reduce){.flash.on{animation:none}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header><h1>TANKS<span style="color:#648964">_</span></h1><span class="version">Prototype 0.1</span></header>
+  <main>
+    <div class="playfield" id="playfield" role="button" tabindex="0" aria-label="Tank construction area. Activate to place one pixel.">
+      <canvas id="tank" aria-hidden="true"></canvas>
+      <span class="view-label" id="viewLabel">LEVEL 1 / 6 PIXELS</span>
+      <span class="field-hint" id="hint">Tap anywhere here to place a pixel</span>
+      <div class="flash" id="flash"></div>
+    </div>
+    <aside aria-live="polite">
+      <div class="metric"><div class="eyebrow">Tank in progress</div><strong id="level">01</strong></div>
+      <div class="metric"><div class="eyebrow">Pixels placed</div><strong id="total">0</strong></div>
+      <div class="progress"><div class="progress-title"><div class="eyebrow" id="componentLabel">Pixels in tank</div><span id="fraction">0 / 6</span></div><div class="cells" id="cells" aria-hidden="true"></div><p class="detail" id="detail">Six pixels form the first tank.</p></div>
+      <button class="build" id="build" type="button">+ PLACE PIXEL</button>
+      <p class="instructions">One press = one pixel. Click the field, tap the button, or press <kbd>Space</kbd>.</p>
+      <p class="save-status" id="saveStatus" role="status">Progress saves in this browser.</p>
+    </aside>
+  </main>
+  <footer><span>6 pixels → 1 tank · 6 tanks → 1 larger tank</span><span>BUILD FOREVER ↗</span></footer>
+</div>
+<script>
+(() => {
+  const shape = [[1,0],[0,1],[1,1],[2,1],[0,2],[2,2]];
+  const canvas = document.getElementById('tank');
+  const ctx = canvas.getContext('2d');
+  const field = document.getElementById('playfield');
+  const build = document.getElementById('build');
+  const flash = document.getElementById('flash');
+  const saveStatus = document.getElementById('saveStatus');
+  const saveKey = 'tanks.prototype.v1.pixels';
+  let clicks = 0n, level = 1, animation = null, frame = 0, recentPixel = -1;
+  const pow6 = n => 6n ** BigInt(n);
+  const format = n => n.toLocaleString('en-US');
+  function readSaved() {
+    try {
+      const value = localStorage.getItem(saveKey);
+      return value !== null && /^(0|[1-9]\d{0,100})$/.test(value) ? BigInt(value) : 0n;
+    } catch (_e) {
+      saveStatus.textContent = 'Saving is unavailable in this browser.';
+      return 0n;
+    }
+  }
+  function save() {
+    try {
+      localStorage.setItem(saveKey, clicks.toString());
+      saveStatus.textContent = 'Saved on this device.';
+    } catch (_e) {
+      saveStatus.textContent = 'Saving is unavailable in this browser.';
+    }
+  }
+  function update() {
+    while (clicks >= pow6(level)) {
+      const previous = level;
+      level++;
+      animation = { start: performance.now(), level, from: Math.pow(3,previous) };
+      flash.classList.remove('on'); void flash.offsetWidth; flash.classList.add('on');
+    }
+    const unit = pow6(level-1);
+    const complete = Number(clicks / unit);
+    const remainder = clicks % unit;
+    document.getElementById('level').textContent = String(level).padStart(2,'0');
+    document.getElementById('total').textContent = format(clicks);
+    document.getElementById('viewLabel').textContent = `LEVEL ${level} / ${format(pow6(level))} PIXELS`;
+    document.getElementById('componentLabel').textContent = level === 1 ? 'Pixels in tank' : `Level ${level-1} tanks`;
+    document.getElementById('fraction').textContent = `${complete} / 6`;
+    document.getElementById('detail').textContent = level === 1 ? `${6-complete} pixel${6-complete===1?'':'s'} until the first tank.` : `${format(remainder)} / ${format(unit)} pixels in the next Level ${level-1} tank.`;
+    document.getElementById('cells').innerHTML = Array.from({length:6}, (_,i) => `<i class="${i<complete?'complete':i===complete&&remainder>0n?'active':''}" style="--fill:${i===complete?Number(remainder*100n/unit):0}%"></i>`).join('');
+    document.getElementById('hint').textContent = clicks===0n ? 'Tap anywhere here to place a pixel' : 'Tap to add the next pixel';
+    draw();
+  }
+  function place() {
+    const stored = readSaved();
+    if(stored > clicks) clicks = stored;
+    clicks++; save(); recentPixel = performance.now(); update();
+  }
+  field.addEventListener('click',place);
+  field.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();place();}});
+  build.addEventListener('click',place);
+  // Space works anywhere except on a focused button, where the browser activates it.
+  document.addEventListener('keydown',e=>{if(e.code==='Space' && e.target!==field && e.target!==build && !e.repeat){e.preventDefault();place();}});
+  function resize() {
+    const dpr=Math.min(devicePixelRatio||1,2), rect=field.getBoundingClientRect();
+    const w=Math.round(rect.width*dpr),h=Math.round(rect.height*dpr);
+    if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
+    draw();
+  }
+  function render(x,y,depth,count,size,now){
+    if(count<=0n)return;
+    if(depth===0 || size<1.4){
+      ctx.fillStyle=size<1.4?'#a9d879':now-recentPixel<220?'#e9f5b6':'#b8df87';
+      ctx.fillRect(Math.round(x),Math.round(y),Math.max(1,Math.ceil(size)),Math.max(1,Math.ceil(size)));
+      return;
+    }
+    const childSize=size/3, perChild=pow6(depth-1);
+    for(let i=0;i<6;i++){
+      const taken=count-BigInt(i)*perChild;
+      if(taken<=0n)break;
+      const amount=taken>perChild?perChild:taken;
+      const [cx,cy]=shape[i];
+      render(x+cx*childSize,y+cy*childSize,depth-1,amount,childSize,now);
+    }
+  }
+  function draw(now=performance.now()){
+    const w=canvas.width,h=canvas.height;if(!w||!h)return;
+    ctx.clearRect(0,0,w,h);
+    const rootSpan=Math.pow(3,level);
+    let centerX=rootSpan/2,centerY=rootSpan/2,span=rootSpan;
+    let moving=false;
+    if(animation && animation.level===level){
+      const t=Math.min(1,(now-animation.start)/920), ease=1-Math.pow(1-t,3);
+      const child=rootSpan/3;
+      centerX=(1-ease)*(1.5*child)+ease*rootSpan/2;
+      centerY=(1-ease)*(.5*child)+ease*rootSpan/2;
+      span=child+(rootSpan-child)*ease;
+      moving=t<1;
+      if(!moving)animation=null;
+    }
+    const cellScale=Math.min(w,h)*.78/span;
+    const offsetX=w/2-centerX*cellScale,offsetY=h/2-centerY*cellScale;
+    // Faint six-slot scaffold gives partial construction a visible destination.
+    const slot=rootSpan/3, gap=Math.max(1,Math.min(8,slot*cellScale*.06));
+    ctx.strokeStyle='#72946b66';ctx.lineWidth=Math.max(1,Math.min(2,devicePixelRatio||1));
+    shape.forEach(([sx,sy])=>{
+      const x=offsetX+sx*slot*cellScale,y=offsetY+sy*slot*cellScale,s=slot*cellScale;
+      if(s>8)ctx.strokeRect(Math.round(x)+gap,Math.round(y)+gap,Math.max(0,s-gap*2),Math.max(0,s-gap*2));
+    });
+    ctx.fillStyle='#a9d879';
+    render(offsetX,offsetY,level,clicks,rootSpan*cellScale,now);
+    if(moving||now-recentPixel<230){cancelAnimationFrame(frame);frame=requestAnimationFrame(draw);}
+  }
+  new ResizeObserver(resize).observe(field);
+  clicks = readSaved();
+  if(clicks > 0n) saveStatus.textContent = 'Progress restored on this device.';
+  update();
+  window.addEventListener('storage', e => {
+    if(e.key !== saveKey) return;
+    const stored = readSaved();
+    if(stored > clicks){clicks = stored; saveStatus.textContent = 'Progress updated from another tab.'; update();}
+  });
+  // Expose the same single action to supporting browser agents.
+  if(document.modelContext?.registerTool){
+    try{Promise.resolve(document.modelContext.registerTool({name:'place_pixel',title:'Place one pixel',description:'Place exactly one pixel in the current recursive tank.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:false},execute(){place();return {pixelsPlaced:clicks.toString(),tankLevel:level};}})).catch(()=>{});}catch(_e){}
+  }
+})();
+</script>
+</body>
+</html>
