@@ -16,7 +16,7 @@
     .version,.eyebrow{font-size:.8rem;letter-spacing:.11em;text-transform:uppercase;color:#8fa593}.version{white-space:nowrap}
     main{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 265px;gap:24px;min-height:0}
     .playfield{position:relative;min-height:440px;overflow:hidden;border:1px solid #3e5945;background:radial-gradient(circle at center,#23372b 0%,#17251d 55%,#122018 100%);box-shadow:inset 0 0 90px #07110bc0,0 20px 70px #070f0a80;cursor:crosshair;touch-action:manipulation}
-    .playfield:focus-visible,.build:focus-visible{outline:3px solid #e2ef8e;outline-offset:3px}
+    .playfield:focus-visible,.build:focus-visible,.reset:focus-visible{outline:3px solid #e2ef8e;outline-offset:3px}
     .playfield::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.18;background-image:linear-gradient(#73936b22 1px,transparent 1px),linear-gradient(90deg,#73936b22 1px,transparent 1px);background-size:24px 24px}
     canvas{display:block;width:100%;height:100%}.view-label{position:absolute;top:18px;left:20px;pointer-events:none;color:#a3b8a6;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase}
     .field-hint{position:absolute;bottom:18px;left:20px;right:20px;pointer-events:none;color:#a6bd9d;font-size:.9rem;text-align:center}
@@ -28,6 +28,7 @@
     .detail{color:#9fb49e;font-size:.85rem;line-height:1.5;margin:12px 0 0}.build{margin-top:auto;width:100%;min-height:66px;border:1px solid #d2ec9c;background:#b5d986;color:#132017;font-size:1.05rem;font-weight:800;letter-spacing:.06em;cursor:pointer;box-shadow:5px 5px 0 #54734c;transition:transform .1s,box-shadow .1s,background .15s}.build:hover{background:#d0eda1}.build:active{transform:translate(4px,4px);box-shadow:1px 1px 0 #54734c}
     .instructions{margin:0;color:#a6b9a3;font-size:.85rem;line-height:1.6}.instructions kbd{border:1px solid #5a705a;padding:2px 5px;color:#c9dbc1}
     .save-status{grid-column:1/-1;color:#9fbe98;font-size:.78rem;line-height:1.4;margin:0}
+    .reset{grid-column:1/-1;align-self:flex-start;border:0;border-bottom:1px solid #688468;background:transparent;color:#adc0aa;padding:4px 0;font-size:.8rem;cursor:pointer}.reset:hover{color:#e7efdf;border-color:#e7efdf}.reset:disabled{opacity:.45;cursor:default}
     footer{display:flex;justify-content:space-between;gap:12px;color:#829a87;font-size:.78rem;letter-spacing:.04em}
     @media(max-width:730px){.app{gap:14px;padding:16px 16px max(16px,env(safe-area-inset-bottom))}main{display:flex;flex-direction:column;gap:14px}.playfield{min-height:0;height:min(54svh,510px);flex:none}aside{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;padding:16px}.metric{padding-bottom:9px}.metric strong{font-size:28px}.progress{grid-column:1/-1}.build{grid-column:1/-1;min-height:60px}.instructions{grid-column:1/-1}.field-hint{font-size:.8rem}footer{font-size:.7rem}}
     @media(max-width:400px){h1{font-size:22px}.version{font-size:.68rem}.playfield{height:47svh}.metric strong{font-size:25px}}
@@ -51,6 +52,7 @@
       <button class="build" id="build" type="button">+ PLACE PIXEL</button>
       <p class="instructions">One press = one pixel. Click the field, tap the button, or press <kbd>Space</kbd>.</p>
       <p class="save-status" id="saveStatus" role="status">Progress saves in this browser.</p>
+      <button class="reset" id="reset" type="button" disabled>Reset progress</button>
     </aside>
   </main>
   <footer><span>6 pixels → 1 tank · 6 tanks → 1 larger tank</span><span>BUILD FOREVER ↗</span></footer>
@@ -62,6 +64,7 @@
   const ctx = canvas.getContext('2d');
   const field = document.getElementById('playfield');
   const build = document.getElementById('build');
+  const reset = document.getElementById('reset');
   const flash = document.getElementById('flash');
   const saveStatus = document.getElementById('saveStatus');
   const saveKey = 'tanks.prototype.v1.pixels';
@@ -103,6 +106,7 @@
     document.getElementById('detail').textContent = level === 1 ? `${6-complete} pixel${6-complete===1?'':'s'} until the first tank.` : `${format(remainder)} / ${format(unit)} pixels in the next Level ${level-1} tank.`;
     document.getElementById('cells').innerHTML = Array.from({length:6}, (_,i) => `<i class="${i<complete?'complete':i===complete&&remainder>0n?'active':''}" style="--fill:${i===complete?Number(remainder*100n/unit):0}%"></i>`).join('');
     document.getElementById('hint').textContent = clicks===0n ? 'Tap anywhere here to place a pixel' : 'Tap to add the next pixel';
+    reset.disabled = clicks===0n;
     draw();
   }
   function place() {
@@ -113,8 +117,13 @@
   field.addEventListener('click',place);
   field.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();place();}});
   build.addEventListener('click',place);
+  reset.addEventListener('click',() => {
+    if(clicks===0n || !window.confirm('Reset all pixels saved in this browser? This cannot be undone.')) return;
+    clicks=0n; level=1; animation=null; recentPixel=-1;
+    save(); saveStatus.textContent='Progress reset on this device.'; update();
+  });
   // Space works anywhere except on a focused button, where the browser activates it.
-  document.addEventListener('keydown',e=>{if(e.code==='Space' && e.target!==field && e.target!==build && !e.repeat){e.preventDefault();place();}});
+  document.addEventListener('keydown',e=>{if(e.code==='Space' && e.target!==field && !e.target.closest('button,input,textarea,select') && !e.repeat){e.preventDefault();place();}});
   function resize() {
     const dpr=Math.min(devicePixelRatio||1,2), rect=field.getBoundingClientRect();
     const w=Math.round(rect.width*dpr),h=Math.round(rect.height*dpr);
@@ -172,7 +181,8 @@
   window.addEventListener('storage', e => {
     if(e.key !== saveKey) return;
     const stored = readSaved();
-    if(stored > clicks){clicks = stored; saveStatus.textContent = 'Progress updated from another tab.'; update();}
+    if(stored===0n && clicks!==0n){clicks=0n;level=1;animation=null;saveStatus.textContent='Progress reset in another tab.';update();}
+    else if(stored > clicks){clicks = stored; saveStatus.textContent = 'Progress updated from another tab.'; update();}
   });
   // Expose the same single action to supporting browser agents.
   if(document.modelContext?.registerTool){
