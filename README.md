@@ -10,7 +10,7 @@ Each click or tap adds one pixel. Six pixels make a tank; six tanks make a large
 
 ## Modules
 
-The project includes [Genetic Warfare](modules/genetic-warfare/) under `modules/genetic-warfare/`. It is a separate build-and-bank prototype: four overlapping source segments make a 3 × 3 tank, each completed generation awards its visible-window trait score once, and a random one-segment mutation follows the two guaranteed basic generations. [Read its rulebook](modules/genetic-warfare/GDD.md). The basic game remains unchanged. The old `genetic-warfare/` URL forwards to the module; the modes use separate browser save keys.
+The project includes [Genetic Warfare](modules/genetic-warfare/) under `modules/genetic-warfare/`. It is a separate build-and-bank prototype: four overlapping source segments make a 3 × 3 tank, each completed generation awards its visible-window trait score once, and after two guaranteed basic generations the player risks a one-segment mutation and a wheel that uniquely reshuffles −2 through +2 across the five visible patterns. [Read its rulebook](modules/genetic-warfare/GDD.md). The basic game remains unchanged. The old `genetic-warfare/` URL forwards to the module; the modes use separate browser save keys.
 
 ## Save data
 
