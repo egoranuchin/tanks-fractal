@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#101b22">
-<meta name="description" content="Build overlapping pixel tanks, risk a mutation, and bank your best trait score.">
+<meta name="description" content="Build overlapping pixel tanks, spin the trait wheel, and bank your best score.">
 <title>TANKS · Genetic Warfare</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' fill='%23101b22'/%3E%3Cpath d='M10 10h10v10H10zm14 0h10v10H24zM10 24h10v10H10zm14 0h10v10H24z' fill='%23f2ae7d'/%3E%3C/svg%3E">
 <style>
@@ -16,55 +16,62 @@
 .build-area{display:flex;align-items:center;justify-content:center;min-height:390px;border:1px solid #42646a;background:linear-gradient(130deg,#1d383d,#14282e);position:relative;overflow:hidden}.build-area::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.28;background-image:linear-gradient(#81a9a51a 1px,transparent 1px),linear-gradient(90deg,#81a9a51a 1px,transparent 1px);background-size:21px 21px}.tank-grid{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(350px,76%);aspect-ratio:1}.cell{border:1px solid #66878b;min-width:0;background:#2c474a;color:#c9dbd7;cursor:pointer;transition:background .14s,transform .12s}.cell:hover:not(:disabled){background:#4b7070}.cell:active:not(:disabled){transform:scale(.96)}.cell.filled{background:#f2ae7d;border-color:#ffe0aa;box-shadow:inset 0 0 0 2px #f7cf9b,0 0 20px #efad7640}.cell.dormant{background:transparent;border:1px dashed #3b595c;opacity:.55}.cell.complete{cursor:default}.cell:disabled{opacity:1}
 .progress-line{display:flex;justify-content:space-between;align-items:center;gap:12px;color:#b2cdca;margin:14px 0 0;font-size:.88rem}.progress-track{height:8px;background:#274149;border:1px solid #5a777a;margin:12px 0 0;overflow:hidden}.progress-track i{display:block;height:100%;width:0;background:#f2ae7d;transition:width .15s}.message{min-height:50px;margin:16px 0;color:#d7e5dd;line-height:1.45}.actions{display:flex;gap:10px;flex-wrap:wrap}.action{min-height:50px;padding:10px 17px;border:1px solid #e6ba91;background:#f2ae7d;color:#17262b;font-weight:800;cursor:pointer;flex:1}.action:hover{background:#ffca9d}.action.secondary{background:#2b454a;color:#e0f0ea;border-color:#7fa4a2}.action.secondary:hover{background:#37565b}.restart{margin-top:17px;background:none;border:0;border-bottom:1px solid #719494;color:#a9c8c1;padding:2px 0;cursor:pointer;font-size:.8rem}.restart:hover{color:white}
 .side{display:flex;flex-direction:column;gap:16px}.side .panel{box-shadow:none}.sub{color:#a9c4c0;font-size:.79rem;margin:-7px 0 14px}.quad-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.quad{border:1px solid #4b6a6c;background:#20363c;padding:10px;min-width:0}.quad.mutated{border-color:#f2ae7d;box-shadow:inset 0 0 0 1px #f2ae7d}.quad-head{display:flex;justify-content:space-between;gap:5px;align-items:baseline;font-size:.76rem;color:#b9d0cb}.quad-head b{font-size:.97rem}.quad-head b.pos{color:#a8e1c1}.quad-head b.neg{color:#f2ae7d}.quad-body{display:flex;align-items:center;gap:11px;margin-top:8px}.quad-body span{font-size:.73rem;color:#a8c0bc;line-height:1.35;overflow-wrap:anywhere}.mini{display:grid;grid-template-columns:repeat(2,17px);gap:3px;flex:none}.mini i{width:17px;height:17px;background:#365459}.mini i.on{background:#eeb084}.score-detail{margin:14px 0 0;color:#bdd4d0;font-size:.82rem}.score-detail b{font-size:1.1rem;color:#e5f0e7}.mutation-line{margin:13px 0 0;font-size:.8rem;color:#f5bf98;min-height:1.5em}
+.fortune-body{display:flex;align-items:center;gap:17px}.wheel-disc{width:154px;height:154px;flex:none;border-radius:50%;border:5px solid #b9d6ca;position:relative;background:conic-gradient(#cf7f6e 0 20%,#e7a870 20% 40%,#638d8c 40% 60%,#73b79d 60% 80%,#a5dcb4 80% 100%);box-shadow:0 0 0 3px #314f53,inset 0 0 0 2px #10252a}.wheel-disc.spinning{animation:spin-wheel 1s cubic-bezier(.16,.72,.2,1) both}.wheel-core{position:absolute;inset:35px;border-radius:50%;background:#172c32;border:2px solid #d4e6d5;display:grid;place-items:center;text-align:center;color:#e8f2e8;font-size:.75rem;font-weight:800;letter-spacing:.06em}.wheel-mark{position:absolute;font-weight:800;color:#11272b;font-size:.9rem;text-shadow:0 1px #ffffff50}.wheel-mark.m0{top:5px;left:55%}.wheel-mark.m1{top:40px;right:5px}.wheel-mark.m2{bottom:8px;right:30px}.wheel-mark.m3{bottom:8px;left:25px}.wheel-mark.m4{top:41px;left:4px}.wheel-list{min-width:0;flex:1}.wheel-entry{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #426164;padding:4px 0;font-size:.77rem;color:#b9d2ca}.wheel-entry:last-child{border:0}.wheel-entry b{font-size:.86rem;color:#e8f1e7}.wheel-entry b.pos{color:#a8e1c1}.wheel-entry b.neg{color:#f2ae7d}@keyframes spin-wheel{from{transform:rotate(0)}to{transform:rotate(900deg)}}
 .lower{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.lower .panel{min-height:150px}.list{display:flex;flex-direction:column;gap:0}.row{display:flex;justify-content:space-between;gap:12px;border-top:1px solid #3b5a5e;padding:9px 0;font-size:.84rem}.row:first-child{border-top:0}.row span{color:#b3c9c4}.row strong{font-variant-numeric:tabular-nums;text-align:right}.empty{color:#91afaa;margin:0;font-size:.85rem}.footer{display:flex;justify-content:space-between;gap:12px;margin-top:18px;font-size:.78rem;color:#8eadaa}.footer a{color:#bed5ce}
-@media(max-width:860px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.build-area{min-height:350px}}@media(max-width:640px){.shell{padding:16px}.top{align-items:start}.brand{display:block}.brand span{display:block;margin-top:4px}.intro{display:block}.intro .save-note{text-align:left;margin-top:8px}.side,.lower{display:block}.side .panel,.lower .panel{margin-top:14px}.build-area{min-height:0;padding:25px 0}.tank-grid{width:min(315px,78vw)}.panel{padding:16px}.scorebar{gap:8px}.metric{padding:10px}.metric strong{font-size:2rem}.footer{display:block}}
-@media(prefers-reduced-motion:reduce){.progress-track i,.cell{transition:none}}
+@media(max-width:860px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.fortune{grid-column:1/-1}.build-area{min-height:350px}}@media(max-width:640px){.shell{padding:16px}.top{align-items:start}.brand{display:block}.brand span{display:block;margin-top:4px}.intro{display:block}.intro .save-note{text-align:left;margin-top:8px}.side,.lower{display:block}.side .panel,.lower .panel{margin-top:14px}.build-area{min-height:0;padding:25px 0}.tank-grid{width:min(315px,78vw)}.panel{padding:16px}.scorebar{gap:8px}.metric{padding:10px}.metric strong{font-size:2rem}.footer{display:block}}@media(max-width:390px){.fortune-body{gap:9px}.wheel-disc{width:125px;height:125px}.wheel-core{inset:27px}.wheel-entry{font-size:.7rem}.wheel-mark.m1,.wheel-mark.m4{top:30px}}
+@media(prefers-reduced-motion:reduce){.progress-track i,.cell{transition:none}.wheel-disc.spinning{animation:none}}
 </style>
 </head>
 <body>
 <div class="shell">
-<header class="top"><div class="brand"><h1>GENETIC WARFARE</h1><span>TANKS module / Prototype 0.2</span></div><a href="../../">← Basic TANKS</a></header>
-<div class="intro"><p><strong>Build · mutate · bank</strong>Each completed tank adds its four-window trait score once. A click fills a cell; it never awards points on its own.</p><span class="save-note" id="saveNote">Run and high scores save in this browser.</span></div>
+<header class="top"><div class="brand"><h1>GENETIC WARFARE</h1><span>TANKS module / Prototype 0.3</span></div><a href="../../">← Basic TANKS</a></header>
+<div class="intro"><p><strong>Build · spin · bank</strong>Each completed tank adds its four-window trait score once. After the basic opening, the wheel reshuffles the five pattern values when you choose to continue.</p><span class="save-note" id="saveNote">Run and high scores save in this browser.</span></div>
 <main>
 <div class="layout">
 <section class="panel" aria-labelledby="buildTitle"><h2 id="buildTitle">Current tank</h2><div class="scorebar"><div class="metric"><small>Generation</small><strong id="generation">01</strong><span class="hint" id="phaseLabel">Basic blueprint</span></div><div class="metric"><small>Running trait score</small><strong id="totalScore">+0</strong><span class="hint">Bank only at completion</span></div></div><div class="build-area"><div class="tank-grid" id="tankGrid" role="group" aria-label="Current tank grid"></div></div><div class="progress-line"><span id="progressText">0 of 6 cells filled</span><span id="awardPreview">+2 when complete</span></div><div class="progress-track" aria-hidden="true"><i id="progressFill"></i></div><p class="message" id="message" role="status" aria-live="polite"></p><div class="actions"><button class="action" id="placeNext" type="button">+ FILL NEXT CELL</button><button class="action secondary" id="bank" type="button" hidden>Bank score &amp; end run</button><button class="action" id="continue" type="button" hidden>Build next generation</button><button class="action" id="newRun" type="button" hidden>Start a new run</button></div><button class="restart" id="restart" type="button">Restart this run</button></section>
-<div class="side"><section class="panel" aria-labelledby="sourceTitle"><h2 id="sourceTitle">Four source segments</h2><p class="sub">Each source has three filled cells. A mutation switches one source segment; overlapping sources form the visible tank.</p><div class="quad-grid" id="sourceGrid"></div><p class="mutation-line" id="mutationLine"></p></section><section class="panel" aria-labelledby="windowsTitle"><h2 id="windowsTitle">Visible windows · completion award</h2><p class="sub">Overlaps can fill an entire window. These four visible values are added once when the tank is complete.</p><div class="quad-grid" id="windowGrid"></div><p class="score-detail">This tank awards <b id="shapeScore">+2</b> on completion.</p></section></div>
+<div class="side"><section class="panel fortune" aria-labelledby="wheelTitle"><h2 id="wheelTitle">Trait wheel</h2><p class="sub" id="wheelNote">Fixed opening values. The first spin comes after generation 2.</p><div class="fortune-body"><div class="wheel-disc" id="wheelDisc" aria-hidden="true"><span class="wheel-mark m0">−2</span><span class="wheel-mark m1">−1</span><span class="wheel-mark m2">0</span><span class="wheel-mark m3">+1</span><span class="wheel-mark m4">+2</span><span class="wheel-core">FORTUNE<br>WHEEL</span></div><div class="wheel-list" id="wheelList" aria-label="Values assigned to the five visible patterns"></div></div></section><section class="panel" aria-labelledby="sourceTitle"><h2 id="sourceTitle">Four source segments</h2><p class="sub">Each source has three filled cells. A mutation switches one source segment; overlapping sources form the visible tank.</p><div class="quad-grid" id="sourceGrid"></div><p class="mutation-line" id="mutationLine"></p></section><section class="panel" aria-labelledby="windowsTitle"><h2 id="windowsTitle">Visible windows · completion award</h2><p class="sub">Overlaps can fill an entire window. These four visible values are added once when the tank is complete.</p><div class="quad-grid" id="windowGrid"></div><p class="score-detail">This tank awards <b id="shapeScore">+2</b> on completion.</p></section></div>
 </div>
 <div class="lower"><section class="panel" aria-labelledby="historyTitle"><h2 id="historyTitle">This run</h2><div class="list" id="historyList"></div></section><section class="panel" aria-labelledby="scoresTitle"><h2 id="scoresTitle">Banked high scores</h2><div class="list" id="scoresList"></div></section></div>
 </main>
-<footer class="footer"><span>Two basic generations, then one random segment switch per generation.</span><a href="GDD.md">Read the module rulebook</a></footer>
+<footer class="footer"><span>Two basic generations, then one mutation and one wheel shuffle per generation.</span><a href="GDD.md">Read the module rulebook</a></footer>
 </div>
 <script>
 (() => {
   const windows=[[0,1,3,4],[1,2,4,5],[3,4,6,7],[4,5,7,8]];
   const names=['Top left','Top right','Bottom left','Bottom right'];
   const cornerNames=['top left','top right','bottom left','bottom right'];
-  const values=[0,1,2,-1];
+  const fixedValues=[0,1,2,-1,-2];
+  const patternNames=['Top-left empty','Top-right empty','Bottom-left empty','Bottom-right empty','Full square'];
   const basic=[0,1,3,2];
-  const runKey='tanks.genetic-warfare.v2.run';
-  const scoresKey='tanks.genetic-warfare.v2.high-scores';
+  const runKey='tanks.genetic-warfare.v3.run';
+  const scoresKey='tanks.genetic-warfare.v3.high-scores';
+  const oldScoresKey='tanks.genetic-warfare.v2.high-scores';
   const $=id=>document.getElementById(id);
   const signed=n=>n>0?`+${n}`:String(n);
-  const fresh=()=>({generation:1,blueprint:[...basic],filled:[],total:0,phase:'building',history:[],mutation:null,lastAward:null});
+  const fresh=()=>({generation:1,blueprint:[...basic],wheel:[...fixedValues],filled:[],total:0,phase:'building',history:[],mutation:null,lastAward:null});
   const shapeOf=blueprint=>{
     const cells=new Set();
     windows.forEach((window,q)=>window.forEach((cell,i)=>{if(i!==blueprint[q])cells.add(cell);}));
     return cells;
   };
-  const visibleParts=cells=>windows.map(window=>{
+  const visibleParts=(cells,wheel)=>windows.map(window=>{
     const missing=window.findIndex(cell=>!cells.has(cell));
-    return missing<0?-2:values[missing];
+    return wheel[missing<0?4:missing];
   });
-  const scoreOf=blueprint=>visibleParts(shapeOf(blueprint)).reduce((sum,value)=>sum+value,0);
+  const scoreOf=(blueprint,wheel)=>visibleParts(shapeOf(blueprint),wheel).reduce((sum,value)=>sum+value,0);
   const validBlueprint=b=>Array.isArray(b)&&b.length===4&&b.every(v=>Number.isInteger(v)&&v>=0&&v<4);
-  let run=fresh(), highScores=[];
+  const validWheel=w=>Array.isArray(w)&&w.length===5&&w.every(Number.isInteger)&&[...w].sort((a,b)=>a-b).every((v,i)=>v===i-2);
+  const shuffledWheel=()=>{const wheel=[-2,-1,0,1,2];for(let i=wheel.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[wheel[i],wheel[j]]=[wheel[j],wheel[i]];}return wheel;};
+  let run=fresh(),highScores=[],oldScores=[];
   try{
     const raw=JSON.parse(localStorage.getItem(runKey)||'null');
-    if(raw&&Number.isSafeInteger(raw.generation)&&raw.generation>=1&&raw.generation<=100000&&validBlueprint(raw.blueprint)&&Array.isArray(raw.filled)&&raw.filled.every(v=>Number.isInteger(v)&&v>=0&&v<9)&&new Set(raw.filled).size===raw.filled.length&&raw.filled.every(v=>shapeOf(raw.blueprint).has(v))&&Number.isSafeInteger(raw.total)&&['building','decision','banked'].includes(raw.phase)&&Array.isArray(raw.history)&&raw.history.length<=100&&raw.history.every(h=>h&&Number.isSafeInteger(h.generation)&&Number.isSafeInteger(h.award)&&Number.isSafeInteger(h.total))){
+    if(raw&&Number.isSafeInteger(raw.generation)&&raw.generation>=1&&raw.generation<=100000&&validBlueprint(raw.blueprint)&&validWheel(raw.wheel)&&Array.isArray(raw.filled)&&raw.filled.every(v=>Number.isInteger(v)&&v>=0&&v<9)&&new Set(raw.filled).size===raw.filled.length&&raw.filled.every(v=>shapeOf(raw.blueprint).has(v))&&Number.isSafeInteger(raw.total)&&['building','decision','banked'].includes(raw.phase)&&Array.isArray(raw.history)&&raw.history.length<=100&&raw.history.every(h=>h&&Number.isSafeInteger(h.generation)&&Number.isSafeInteger(h.award)&&Number.isSafeInteger(h.total))){
       if((raw.phase==='building'&&raw.filled.length<shapeOf(raw.blueprint).size)||(raw.phase!=='building'&&raw.filled.length===shapeOf(raw.blueprint).size))run=raw;
     }
     const saved=JSON.parse(localStorage.getItem(scoresKey)||'[]');
     if(Array.isArray(saved))highScores=saved.filter(s=>s&&Number.isSafeInteger(s.score)&&Number.isSafeInteger(s.generation)&&typeof s.date==='string').slice(0,20);
+    const previous=JSON.parse(localStorage.getItem(oldScoresKey)||'[]');
+    if(Array.isArray(previous))oldScores=previous.filter(s=>s&&Number.isSafeInteger(s.score)&&Number.isSafeInteger(s.generation)).slice(0,20);
   }catch(_e){$('saveNote').textContent='Browser storage is unavailable; this run may not restore.';}
   function save(){try{localStorage.setItem(runKey,JSON.stringify(run));localStorage.setItem(scoresKey,JSON.stringify(highScores));}catch(_e){$('saveNote').textContent='Browser storage is unavailable; this run may not restore.';}}
   function mini(cells){const grid=document.createElement('div');grid.className='mini';grid.setAttribute('aria-hidden','true');for(let i=0;i<4;i++){const dot=document.createElement('i');if(cells.includes(i))dot.className='on';grid.append(dot);}return grid;}
@@ -74,7 +81,7 @@
     const body=document.createElement('div');body.className='quad-body';body.append(mini(local));const label=document.createElement('span');label.textContent=caption;body.append(label);card.append(head,body);target.append(card);
   }
   function render(){
-    const cells=shapeOf(run.blueprint),ordered=[...cells].sort((a,b)=>a-b),parts=visibleParts(cells),award=parts.reduce((a,b)=>a+b,0),filled=new Set(run.filled);
+    const cells=shapeOf(run.blueprint),parts=visibleParts(cells,run.wheel),award=parts.reduce((a,b)=>a+b,0),filled=new Set(run.filled);
     $('generation').textContent=String(run.generation).padStart(2,'0');$('phaseLabel').textContent=run.generation<=2?'Basic blueprint':'Mutated blueprint';
     $('totalScore').textContent=signed(run.total);$('totalScore').className=run.total>0?'positive':run.total<0?'negative':'';
     const grid=$('tankGrid');grid.replaceChildren();
@@ -90,6 +97,9 @@
     if(run.phase==='building')$('message').textContent=run.generation<=2?'Fill the basic tank. Its trait is awarded only when the shape is complete.':`Fill this ${cells.size}-cell shape. You can bank again only after completion.`;
     else if(run.phase==='decision')$('message').textContent=`Generation ${run.generation} complete: ${signed(run.lastAward)} awarded. Bank ${signed(run.total)} now, or continue the run.`;
     else $('message').textContent=`Banked ${signed(run.total)} at generation ${run.generation}. This run is finished.`;
+    $('wheelNote').textContent=run.generation<=2?'Fixed opening values. The first spin comes after generation 2.':'Five different values, shuffled once for this generation. Matching visible patterns share a value.';
+    const list=$('wheelList');list.replaceChildren();
+    patternNames.forEach((name,i)=>{const row=document.createElement('div');row.className='wheel-entry';const label=document.createElement('span');label.textContent=name;const value=document.createElement('b');value.textContent=signed(run.wheel[i]);value.className=run.wheel[i]>0?'pos':run.wheel[i]<0?'neg':'';row.append(label,value);list.append(row);});
     const sources=$('sourceGrid'),visible=$('windowGrid');sources.replaceChildren();visible.replaceChildren();
     windows.forEach((window,q)=>{
       const sourceMissing=run.blueprint[q],actual=window.map((cell,i)=>cells.has(cell)?i:-1).filter(i=>i>=0);
@@ -100,15 +110,18 @@
     $('shapeScore').textContent=signed(award);
     $('mutationLine').textContent=run.mutation?`Mutation: ${names[run.mutation.quadrant]} source, ${cornerNames[run.mutation.from]} empty → ${cornerNames[run.mutation.to]} empty.`:'No mutation yet.';
     const history=$('historyList');history.replaceChildren();if(!run.history.length){const p=document.createElement('p');p.className='empty';p.textContent='Finish a tank to record its score.';history.append(p);}else for(const h of [...run.history].reverse().slice(0,7)){const row=document.createElement('div');row.className='row';const label=document.createElement('span');label.textContent=`Generation ${h.generation}`;const value=document.createElement('strong');value.textContent=`${signed(h.award)} → ${signed(h.total)}`;row.append(label,value);history.append(row);}
-    const highs=$('scoresList');highs.replaceChildren();if(!highScores.length){const p=document.createElement('p');p.className='empty';p.textContent='No runs banked yet.';highs.append(p);}else highScores.forEach((s,i)=>{const row=document.createElement('div');row.className='row';const label=document.createElement('span');label.textContent=`#${i+1} · Gen ${s.generation}`;const value=document.createElement('strong');value.textContent=signed(s.score);row.append(label,value);highs.append(row);});
+    const highs=$('scoresList');highs.replaceChildren();if(!highScores.length){const p=document.createElement('p');p.className='empty';p.textContent='No wheel runs banked yet.';highs.append(p);}else highScores.forEach((s,i)=>{const row=document.createElement('div');row.className='row';const label=document.createElement('span');label.textContent=`#${i+1} · Gen ${s.generation}`;const value=document.createElement('strong');value.textContent=signed(s.score);row.append(label,value);highs.append(row);});
+    if(oldScores.length){const title=document.createElement('p');title.className='sub';title.style.margin='15px 0 5px';title.textContent='Earlier rulebook (separate scores)';highs.append(title);oldScores.slice(0,5).forEach(s=>{const row=document.createElement('div');row.className='row';const label=document.createElement('span');label.textContent=`Gen ${s.generation}`;const value=document.createElement('strong');value.textContent=signed(s.score);row.append(label,value);highs.append(row);});}
   }
-  function fill(i){if(run.phase!=='building'||run.filled.includes(i)||!shapeOf(run.blueprint).has(i))return;run.filled.push(i);if(run.filled.length===shapeOf(run.blueprint).size){const award=scoreOf(run.blueprint);run.total+=award;run.lastAward=award;run.phase='decision';run.history.push({generation:run.generation,award,total:run.total});run.history=run.history.slice(-100);}save();render();}
+  function fill(i){if(run.phase!=='building'||run.filled.includes(i)||!shapeOf(run.blueprint).has(i))return;run.filled.push(i);if(run.filled.length===shapeOf(run.blueprint).size){const award=scoreOf(run.blueprint,run.wheel);run.total+=award;run.lastAward=award;run.phase='decision';run.history.push({generation:run.generation,award,total:run.total});run.history=run.history.slice(-100);}save();render();}
   $('placeNext').addEventListener('click',()=>{if(run.phase!=='building')return;const next=[...shapeOf(run.blueprint)].sort((a,b)=>a-b).find(i=>!run.filled.includes(i));if(next!==undefined)fill(next);});
   $('continue').addEventListener('click',()=>{
     if(run.phase!=='decision')return;
-    let mutation=null,blueprint=[...run.blueprint];
+    let mutation=null,blueprint=[...run.blueprint],wheel=[...fixedValues];
     if(run.generation>=2){const quadrant=Math.floor(Math.random()*4),from=blueprint[quadrant],choice=Math.floor(Math.random()*3),to=choice>=from?choice+1:choice;blueprint[quadrant]=to;mutation={quadrant,from,to};}
-    run={...run,generation:run.generation+1,blueprint,filled:[],phase:'building',mutation,lastAward:null};save();render();
+    if(mutation)wheel=shuffledWheel();
+    run={...run,generation:run.generation+1,blueprint,wheel,filled:[],phase:'building',mutation,lastAward:null};save();render();
+    if(mutation){const disc=$('wheelDisc');disc.classList.remove('spinning');void disc.offsetWidth;disc.classList.add('spinning');setTimeout(()=>disc.classList.remove('spinning'),1100);}
   });
   $('bank').addEventListener('click',()=>{if(run.phase!=='decision')return;highScores.push({score:run.total,generation:run.generation,date:new Date().toISOString()});highScores.sort((a,b)=>b.score-a.score||b.generation-a.generation);highScores=highScores.slice(0,20);run.phase='banked';save();render();});
   $('newRun').addEventListener('click',()=>{if(run.phase!=='banked')return;run=fresh();save();render();});
