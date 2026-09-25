@@ -1,59 +1,52 @@
-# TANKS / Genetic Warfare — module design document, draft 0.1
+# TANKS / Genetic Warfare — prototype rulebook 0.2
 
-**Genetic Warfare** is an experimental module in the **TANKS** project. Its initial purpose is to test whether tiny spatial patterns can form an interesting system of inherited advantages and disadvantages. The tank builder remains playable at the project root; the module does not change its construction rules or saved tanks.
+**Genetic Warfare** is a separate experimental play mode under `modules/genetic-warfare/`. The basic TANKS game at the repository root keeps its own six-pixel construction and tank library. Neither mode changes the other's progress.
 
-## Project placement
+## The tank and its four segments
 
-- Tank builder: `/index.html`
-- Gene Lab: `/modules/genetic-warfare/index.html`
-- This document: `/modules/genetic-warfare/GDD.md`
-- The earlier `/genetic-warfare/` entry point forwards to the module so existing links continue to work. Both paths use the same browser origin and sign assignments.
+A tank is displayed on a 3 × 3 grid. Four overlapping 2 × 2 **source segments** sit at the top left, top right, bottom left, and bottom right. Each source segment has exactly three filled cells, so it is described by its one empty corner. Its four choices are top-left empty, top-right empty, bottom-left empty, and bottom-right empty.
 
-## Core rule established so far
+The four sources are **overlaid by union**: a cell is visible if any source fills it. Mutating one source leaves the other three source choices unchanged, though their shared cells may change the resulting visible windows. In particular, overlap can turn a visible 2 × 2 window into a full square. A source is never mutated directly to a full square. Because every visible window contains its own three-filled source, the final grid never contains an unlisted window pattern. The union contains between five and nine filled cells; that number is the tank's build cost in clicks.
 
-A **gene** is a 3 × 3 grid with exactly four filled cells. The four cells have no placement order. Each position-specific gene has a value of either **+1 trait point** or **−1 trait point**.
+## Visible-window trait rulebook
 
-There are **C(9, 4) = 126** possible genes. In this draft, a rotated or mirrored pattern is a separate gene because its occupied grid positions differ. If orientations should be equivalent, the catalog would contain 34 rotation classes or 23 rotation-and-mirror classes instead. Only 36 of the 126 raw patterns are connected through shared edges; disconnected patterns remain valid for now.
+Each of the four **visible** 2 × 2 windows is scored after all four sources are overlaid:
 
-The word *trait* is deliberately generic. We have not decided whether points contribute to one score or to named attributes such as armor, mobility, firepower, or stability. A +1/−1 assignment is data attached to a gene, not a claim that a shape is inherently good or bad.
+| Visible window | Trait points |
+| --- | ---: |
+| Top-left cell empty | 0 |
+| Top-right cell empty | +1 |
+| Bottom-right cell empty | −1 |
+| Bottom-left cell empty | +2 |
+| All four cells filled | −2 |
 
-## Prototype 0.1: Gene Lab
+A completed tank's award is the sum of its four visible-window values. The basic six-cell tank (`.#./###/#.#`) has values **0, +1, −1, +2**, so its award is **+2**. Rotations, a seven-cell H, and an eight-cell donut are among the other +2 outcomes. Four source choices per quadrant produce 4⁴ = **256 blueprints** but only **35 distinct visible shapes**; eight visible shapes score +2. These counts are design checks, not additional mechanics.
 
-This is a design sandbox, not yet a combat game.
+## Generation loop
 
-1. The player clicks cells in a 3 × 3 grid. A fifth cell cannot be filled.
-2. At four filled cells, the lab identifies that exact pattern in a catalog of 126.
-3. Every catalog entry has a +1 or −1 assignment. The initial catalog alternates signs by its stable pattern index, yielding 63 of each. This is a neutral placeholder, **not** a final balance rule.
-4. The player can change an entry's sign to explore the mapping. Overrides persist in the same browser on this origin.
-5. The catalog can reopen any gene for inspection. It shows the number of positive and negative assignments.
+1. A new run begins at generation 1 with the basic blueprint. Each click fills one occupied cell in the current 3 × 3 shape. Clicking a cell outside the blueprint does nothing. The **Fill next cell** button offers the same one-cell action in row order.
+2. A partial tank awards **no trait points**. Only when all its occupied cells are filled does the tank award its four-window score **once**. Add that award to the run's running total.
+3. Generation 2 is also guaranteed to use the basic blueprint. Its +2 award brings the opening run total to **+4**, not +12. The earlier child-sum model is superseded. A completed tank is represented by one filled slot at the next scale, but filling a slot does not separately award the previous tank's points.
+4. After every completion, choose **Bank score & end run** or **Build next generation**. The choice to continue commits to completing that next tank before banking again.
+5. Starting with generation 3, continuing copies the previous generation's four-source blueprint and switches exactly one randomly selected quadrant to one of its other three three-filled choices. Both selections are uniform. The new blueprint remains fixed for that generation's build. The visible union determines its 5–9 occupied cells and its completion award. Repeat once per subsequent generation.
+6. Banking records the current completed generation and running trait total as an immutable high score and ends that run. It cannot be resumed. A new run begins with the two guaranteed basic generations. Restarting an unbanked run discards its unbanked score; it does not erase banked scores.
 
-A pattern's stable ID is its nine-bit occupancy mask, read row by row. The displayed catalog number is its position among the 126 masks in ascending order. The mask is the identity; the catalog number is a convenient label.
+For example, a generation 3 mutation can yield `.#./###/###`. Its visible windows score 0, +1, −2, −2, awarding **−3**. Following two basic completions, the running score changes from +4 to **+1** when this tank is completed. Seven clicks are needed for its seven visible cells; none of those clicks awards points individually.
 
-### Prototype acceptance criteria
+## Prototype interface and persistence
 
-- Exactly 126 distinct four-cell patterns appear, once each.
-- Selecting four cells resolves the same gene regardless of click order.
-- A fifth filled cell is refused without changing the current gene.
-- Every entry has exactly one sign; changing one entry does not change any other.
-- Overrides survive a reload in the same browser.
-- TANKS remains available at the repository root; the lab lives at `/modules/genetic-warfare/`.
+The module shows the active 3 × 3 build, its four source segments, its four scored visible windows, the pending completion award, running total, recent generations, and banked high scores. The player can fill cells, continue after completion, cash out, and start a fresh run. The active run and banked scores restore from browser storage on the same origin. The earlier Gene Lab's editable 126-gene catalog is superseded; its old storage is left untouched and unused. The legacy `/genetic-warfare/` URL forwards to this module.
 
-## Possible game loop, not designed yet
+## Acceptance checks
 
-A later game might combine genes into a unit genome, create variation through mutation or inheritance, and then test units in a conflict. Those actions need rules before they become features. In particular, we need to decide what a genome is, how many genes it contains, how multiple points combine, what resources or choices the player controls, and what constitutes victory.
+- The first two completed tanks each award +2, giving a running total of +4.
+- No partial click changes the trait total; completion awards exactly once.
+- Every mutation changes exactly one source quadrant to a different three-filled choice, never to a full square.
+- Every visible window after overlay is one of the five rulebook states; 5–9 slots are required according to the visible union.
+- A −3 mutation after the opening pair can lower the running total from +4 to +1.
+- Banking is available after completion, stores the score, ends the run, and cannot reopen it for construction.
+- Reloading restores an unfinished or completed run and its banked scores; it does not affect basic TANKS saves.
 
-## Open design decisions
+## Open design work
 
-| Question | Current prototype choice | Alternatives to test |
-| --- | --- | --- |
-| Do orientation and reflection matter? | All 126 position-specific patterns are distinct. | Merge rotations, or merge rotations and mirrors. |
-| Must the four cells be connected? | No. | Require edge connectivity, leaving 36 raw patterns. |
-| How is a gene's sign assigned? | Editable catalog seeded with 63 positive and 63 negative entries. | Curated signs, geometry-based rules, or seeded generation. |
-| Which trait receives the point? | One abstract trait point. | Named traits; a gene could also choose both a trait and sign. |
-| How are genes combined? | Not yet specified. | Fixed genome slots, layered grids, or inheritance from parent units. |
-| What does warfare mean? | No conflict system yet. | Simulated encounters, tactical decisions, or population-level competition. |
-| What is the player's objective? | Explore and evaluate the gene catalog. | Breed for a target, win encounters, or sustain a lineage. |
-
-## Next design pass
-
-Choose the trait vocabulary and the composition rule first. Then define how players acquire or mutate genes and what a +1 or −1 actually changes. Once these rules exist, a small encounter can test whether the spatial genetics influence meaningful decisions.
+Playtest whether the always-valid segment mutations and current point values create enough meaningful bank-or-continue decisions. Combat, named traits, upgrades, automation, and additional progression are outside this prototype.
