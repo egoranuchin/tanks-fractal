@@ -8,9 +8,9 @@ Open `index.html` in a browser, or upload this ZIP to itch.io as an HTML5 game. 
 
 Each click or tap adds one pixel. Six pixels make a tank; six tanks make a larger tank. Completing a level zooms the camera out. The **Reset progress** button clears the active tank after confirmation, for testing. You can click the field, tap **PLACE PIXEL**, or press Space.
 
-## Experiments
+## Modules
 
-[Genetic Warfare — Gene Lab](genetic-warfare/) is a separate 3 × 3 pattern experiment. Its [draft GDD](genetic-warfare/GDD.md) records the 126 four-cell genes, provisional +1/−1 assignments, and the design questions still open. It does not alter TANKS.
+The project includes [Genetic Warfare — Gene Lab](modules/genetic-warfare/) under `modules/genetic-warfare/`. Its [draft GDD](modules/genetic-warfare/GDD.md) records the 126 four-cell genes, provisional +1/−1 assignments, and the design questions still open. Use the link in the TANKS header to open it and its back link to return to tank building. The old `genetic-warfare/` URL forwards to the module. Both views share the same browser origin, so moving between them preserves their local saves.
 
 ## Save data
 
@@ -33,8 +33,8 @@ The current prototype deliberately stays at one pixel per click, one recursive s
 
 ## GitHub Pages
 
-Put `index.html` at the repository root and enable GitHub Pages from the main branch root. The README is optional for hosting.
+Put `index.html` at the repository root and keep `modules/` beside it, then enable GitHub Pages from the main branch root. The README is optional for hosting.
 
 ## itch.io
 
-Upload this ZIP as a browser-playable HTML5 game. `index.html` is already at the ZIP root. A page viewport around 960 × 640 works well on desktop; the game also adapts to phones.
+Upload a ZIP containing the root `index.html` and the `modules/` directory as a browser-playable HTML5 game. A page viewport around 960 × 640 works well on desktop; the game also adapts to phones.

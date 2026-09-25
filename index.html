@@ -11,7 +11,7 @@
     :root{color-scheme:dark;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#101914;color:#e7efdf;font-size:16px}
     *{box-sizing:border-box}body{margin:0;min-height:100svh;background:radial-gradient(ellipse at 50% 37%,#1f3027 0%,#101914 70%)}
     button{font:inherit}.app{min-height:100svh;max-width:1120px;margin:auto;padding:clamp(18px,3vw,36px);display:flex;flex-direction:column;gap:20px}
-    header{display:flex;justify-content:space-between;align-items:baseline;gap:16px;border-bottom:1px solid #33483b;padding-bottom:16px}
+    header{display:flex;justify-content:space-between;align-items:baseline;gap:16px;border-bottom:1px solid #33483b;padding-bottom:16px}.project-nav{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}.project-nav a{color:#c7deae;text-decoration:none;border-bottom:1px solid #779b72;padding-bottom:3px;font-size:.84rem}.project-nav a:hover{color:#f0f8e8;border-color:#d2ec9c}.project-nav a:focus-visible{outline:3px solid #e2ef8e;outline-offset:3px}
     h1{font-size:clamp(23px,3vw,32px);line-height:1;margin:0;letter-spacing:.17em;font-weight:800;color:#c0e390}
     .version,.eyebrow{font-size:.8rem;letter-spacing:.11em;text-transform:uppercase;color:#8fa593}.version{white-space:nowrap}
     main{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 265px;gap:24px;min-height:0}
@@ -33,13 +33,13 @@
     dialog{border:1px solid #91ba76;background:#17251d;color:#e7efdf;box-shadow:0 25px 80px #000b;width:min(400px,calc(100vw - 32px));padding:24px}dialog::backdrop{background:#08120bd9}.save-form{display:flex;flex-direction:column;gap:14px}.save-form h2{font-size:1.2rem;margin:0}.save-form label{font-size:.84rem;color:#b4c9ac}.save-form input{font:inherit;width:100%;min-height:43px;background:#0f1c14;border:1px solid #69856b;color:#e7efdf;padding:9px}.dialog-actions{display:flex;justify-content:flex-end;gap:9px}.dialog-actions button{min-height:40px;border:1px solid #70906c;background:#263b2a;color:#e7efdf;padding:8px 13px;cursor:pointer}.dialog-actions button[type=submit]{background:#b5d986;color:#142019;border-color:#d2ec9c;font-weight:700}
     footer{display:flex;justify-content:space-between;gap:12px;color:#829a87;font-size:.78rem;letter-spacing:.04em}
     @media(max-width:730px){.app{gap:14px;padding:16px 16px max(16px,env(safe-area-inset-bottom))}main{display:flex;flex-direction:column;gap:14px}.playfield{min-height:0;height:min(54svh,510px);flex:none}aside{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;padding:16px}.metric{padding-bottom:9px}.metric strong{font-size:28px}.progress,.library{grid-column:1/-1}.build{grid-column:1/-1;min-height:60px}.instructions{grid-column:1/-1}.field-hint{font-size:.8rem}footer{font-size:.7rem}}
-    @media(max-width:400px){h1{font-size:22px}.version{font-size:.68rem}.playfield{height:47svh}.metric strong{font-size:25px}}
+    @media(max-width:400px){h1{font-size:22px}.version{font-size:.68rem}.playfield{height:47svh}.metric strong{font-size:25px}.project-nav{gap:10px}.project-nav a{font-size:.75rem}}
     @media(prefers-reduced-motion:reduce){.flash.on{animation:none}}
   </style>
 </head>
 <body>
 <div class="app">
-  <header><h1>TANKS<span style="color:#648964">_</span></h1><span class="version">Prototype 0.2</span></header>
+  <header><div class="project-nav"><h1>TANKS<span style="color:#648964">_</span></h1><a href="modules/genetic-warfare/">GENETIC WARFARE / GENE LAB</a></div><span class="version">Prototype 0.2</span></header>
   <main>
     <div class="playfield" id="playfield" role="button" tabindex="0" aria-label="Tank construction area. Activate to place one pixel.">
       <canvas id="tank" aria-hidden="true"></canvas>
