@@ -10,7 +10,7 @@ Each click or tap adds one pixel. Six pixels make a tank; six tanks make a large
 
 ## Modules
 
-The project includes [Genetic Warfare — Gene Lab](modules/genetic-warfare/) under `modules/genetic-warfare/`. Its [draft GDD](modules/genetic-warfare/GDD.md) records the 126 four-cell genes, provisional +1/−1 assignments, and the design questions still open. Use the link in the TANKS header to open it and its back link to return to tank building. The old `genetic-warfare/` URL forwards to the module. Both views share the same browser origin, so moving between them preserves their local saves.
+The project includes [Genetic Warfare](modules/genetic-warfare/) under `modules/genetic-warfare/`. It is a separate build-and-bank prototype: four overlapping source segments make a 3 × 3 tank, each completed generation awards its visible-window trait score once, and a random one-segment mutation follows the two guaranteed basic generations. [Read its rulebook](modules/genetic-warfare/GDD.md). The basic game remains unchanged. The old `genetic-warfare/` URL forwards to the module; the modes use separate browser save keys.
 
 ## Save data
 
